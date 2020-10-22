@@ -1,0 +1,93 @@
+---
+apiVersion: apps/v1
+kind: Namespace
+metadata:
+  name: infra
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring
+  namespace: infra
+  env: dev
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      namespace: infra
+      env: dev
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        namespace: infra
+        env: dev
+      spec:
+       containers:
+        - name: prometeus
+          image: nginx:1.6
+          ports:
+           - containerPort:80
+          labels:
+              name: monitoring
+              namespace: infra
+        - name: Graphana
+          image: mysql-3.2
+          ports:
+           - containerPort:3306
+          labels:
+                name: monitoring
+              namespace: infra1
+        - name: Jenkins
+          image:
+          ports:
+
+
+
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: redis
+# spec:
+#   containers:
+#   - name: redis
+#     image: redis
+#     volumeMounts:
+#     - name: redis-storage
+#       mountPath: /data/redis
+#   volumes:
+#   - name: redis-storage
+#     emptyDir: {}
+
+# volumes:
+#   - name: websvr-storage
+#     emptyDir: {}
+
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: monitoring
