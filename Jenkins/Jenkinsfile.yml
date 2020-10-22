@@ -8,16 +8,14 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
-        stage ('./') {
-          git 'https://github.com/bogdan-domanskiy/Kubernetes.git'
-          sh "ls -la"
-        }
+        git 'https://github.com/bogdan-domanskiy/Kubernetes.git'
+        sh "ls -la"
       }
     }
     stage('Building image') {
       steps{
         script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER ./Jenkins/"
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
         }
       }
     }
