@@ -16,30 +16,15 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: jenkins/jenkins:lts
+        image: bogdanskiy/jenkins-kuber:v2
         ports:
           - name: http-port
             containerPort: 8080
           - name: jnlp-port
-            containerPort: 50000
+            containerPort: 30000
         volumeMounts:
           - name: jenkins-home
             mountPath: /var/jenkins_home
       volumes:
         - name: jenkins-home
           emptyDir: {}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: jenkins
-  namespace: infra
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30000
-  selector:
-    app: jenkins
